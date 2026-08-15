@@ -1,0 +1,23 @@
+[project]
+name = "workstation-atlas"
+version = "0.1.0"
+description = "Python practice notebooks for The Workstation Atlas — MIT's Missing Semester, cross-referenced against one machine"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+    "nbstripout>=0.8.1",
+    # Runs the notebooks headless — the pass condition for this repo is that both
+    # execute top to bottom with exit 0, exercises unsolved and all.
+    "nbclient>=0.10.0",
+]
+
+[tool.uv]
+# Notebooks, not a distributable package — nothing here gets built or published.
+package = false
+# Wait 7 days before resolving newly published versions: a freshly uploaded release
+# is the cheapest supply-chain attack surface there is. (uv >= 0.9.17)
+exclude-newer = "7 days"

@@ -1,0 +1,600 @@
+<meta charset="utf-8">
+<!-- Workstation Atlas v1.0 · rendered 2026-08-13 · moved into version control 2026-08-15
+     editable master: ~/src/github.com/JeremyGracey-AI/The-Workstation-Atlas/atlas/
+     (~/Downloads/missing-semester-workstation-atlas.html is now a symlink to this file) -->
+
+<style>
+  :root{
+    --bg:#FAF7F1; --ink:#2b2622; --muted:#7a7267; --rule:#e2dacc; --accent:#9c3b34;
+    --node-bd:#3a352f; --mach-bg:#edf1f6; --mach-bd:#c5d2de; --mach-ink:#2f5680;
+    --rung-bg:#f1ece1; --rung-bd:#cfc5b2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#888;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;color:var(--ink)}
+  @page{size:11in 8.5in;margin:0}
+  .page{width:11in;height:8.5in;background:var(--bg);position:relative;overflow:hidden;
+        padding:.52in .62in .55in;page-break-after:always;margin:0 auto}
+  .foot{position:absolute;bottom:.26in;left:0;right:0;text-align:center;
+        font:400 8.5px/1 -apple-system,sans-serif;color:var(--muted);letter-spacing:.3px}
+  .serif{font-family:Georgia,'Iowan Old Style',Palatino,serif}
+  .mono{font-family:ui-monospace,'SF Mono',Menlo,monospace}
+
+  /* headers */
+  .hdr{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1.5px solid var(--ink);
+       padding-bottom:7px;margin-bottom:4px}
+  .hdr h1{font-family:Georgia,serif;font-size:23px;font-weight:700;letter-spacing:-.2px}
+  .hdr h1 .n{color:var(--accent)}
+  .hdr .date{font:600 9px sans-serif;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase}
+  .model{font-family:Georgia,serif;font-style:italic;font-size:11.5px;color:#544d44;margin:6px 0 12px}
+  .model b{font-style:normal;color:var(--accent)}
+
+  /* pills */
+  .pill{display:inline-block;font:700 8px/1 -apple-system,sans-serif;letter-spacing:.9px;text-transform:uppercase;
+        padding:3.5px 8px;border-radius:9px;white-space:nowrap;vertical-align:1px}
+  .pg{background:#e2eee2;color:#2f6b45}.pa{background:#f6ecd2;color:#8a6a1f}
+  .pr{background:#f8e1df;color:#a63d38}.pb{background:#e2ebf4;color:#2f5680}
+  .pn{background:#eae4d8;color:#6b6355}
+
+  /* flow nodes + arrows */
+  .flow{display:flex;align-items:stretch}
+  .node{background:#fff;border:1.5px solid var(--node-bd);border-radius:10px;padding:8px 11px;
+        display:flex;flex-direction:column;justify-content:center;flex:1;min-width:0}
+  .node .t{font-size:11.5px;font-weight:700;letter-spacing:-.1px}
+  .node .s{font-size:9px;color:var(--muted);margin-top:2.5px;line-height:1.35}
+  .node .s .mono{font-size:8.5px;color:#54617a}
+  .arr{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 4px;min-width:46px}
+  .arr .lbl{font:600 7.5px sans-serif;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;white-space:nowrap}
+  .arr .ln{position:relative;width:38px;height:1.5px;background:#4a443c}
+  .arr .ln::after{content:'';position:absolute;right:-1px;top:-4px;
+       border-left:7px solid #4a443c;border-top:4.5px solid transparent;border-bottom:4.5px solid transparent}
+  .down{display:flex;justify-content:center;padding:3px 0}
+  .down .vln{position:relative;width:1.5px;height:14px;background:#4a443c}
+  .down .vln::after{content:'';position:absolute;bottom:-1px;left:-4px;
+       border-top:7px solid #4a443c;border-left:4.5px solid transparent;border-right:4.5px solid transparent}
+
+  /* two-column lecture layout */
+  .cols{display:grid;grid-template-columns:1fr 3.05in;gap:16px;align-items:start}
+  .colhead{font:700 8.5px sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .colhead.m{color:var(--mach-ink)}
+  .mach{background:var(--mach-bg);border:1px solid var(--mach-bd);border-radius:10px;padding:7px 10px 8px;margin-bottom:7px}
+  .mach .mt{font-size:10.5px;font-weight:700;color:#243c58}
+  .mach .mb{font-size:9px;color:#41505f;line-height:1.45;margin-top:2px}
+  .mach .mb .mono{font-size:8.4px;background:#dde6ee;padding:.5px 4px;border-radius:4px;color:#243c58}
+
+  /* probe box */
+  .probe{border:1.5px solid var(--accent);background:#fcf4f0;border-radius:10px;padding:8px 13px;margin-top:12px}
+  .probe .ph{font:700 8.5px sans-serif;letter-spacing:1.4px;color:var(--accent);text-transform:uppercase;margin-bottom:3px}
+  .probe .pq{font-family:Georgia,serif;font-style:italic;font-size:10.5px;color:#4c443c;line-height:1.5}
+
+  /* ladder rungs */
+  .rung{display:flex;align-items:center;background:var(--rung-bg);border:1px solid var(--rung-bd);
+        border-radius:7px;padding:5.5px 12px;margin-bottom:5px}
+  .rung .rn{font:700 9.5px ui-monospace,monospace;color:var(--accent);width:34px;flex-shrink:0}
+  .rung .rt{font-size:10.5px;font-weight:700;width:1.45in;flex-shrink:0}
+  .rung .rs{font-size:9px;color:var(--muted)}
+
+  .caption{font:600 9px sans-serif;color:var(--accent);text-align:center;margin-top:8px;letter-spacing:.2px}
+  .kv{width:100%;border-collapse:collapse}
+  .kv td{border-top:1px solid var(--rule);padding:4.5px 7px;font-size:9.5px;vertical-align:top}
+  .kv tr:first-child td{border-top:none}
+  .kv .k{font-family:ui-monospace,monospace;font-size:8.7px;color:#243c58;white-space:nowrap}
+  h3.sec{font-family:Georgia,serif;font-size:13px;margin:10px 0 6px}
+  h3.sec .n{color:var(--accent)}
+</style>
+
+<!-- ══════════════ PAGE 1 · COVER ══════════════ -->
+<div class="page">
+  <div style="margin-top:1.05in">
+    <div style="font:700 10px sans-serif;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase">
+      MIT · The Missing Semester of Your CS Education · 2026</div>
+    <h1 class="serif" style="font-size:44px;letter-spacing:-.5px;margin-top:10px">The Workstation Atlas</h1>
+    <div class="serif" style="font-size:17px;color:#5a5248;margin-top:6px">
+      Nine lectures, cross-referenced against one machine — Jeremy Gracey&rsquo;s desk</div>
+    <div style="border-top:1px solid var(--rule);margin:16px 0 10px;width:7.2in"></div>
+    <div class="serif" style="font-style:italic;font-size:11.5px;color:#6a6257">
+      Working atlas — grows with the course. Every blue callout is a fact verified on the machine
+      (2026-08-13), not generic advice. Each page pairs the lecture&rsquo;s concept flow with
+      <span class="pill pb" style="font-style:normal">on your machine</span> cross-references and ends by probing the flow.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 40px;margin-top:26px;width:8.6in">
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">1</b> &nbsp;Course Overview + the Shell <span style="float:right;color:var(--muted);font-size:9px">p.3</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">6</b> &nbsp;Packaging &amp; Shipping Code <span style="float:right;color:var(--muted);font-size:9px">p.8</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">2</b> &nbsp;Command-line Environment <span style="float:right;color:var(--muted);font-size:9px">p.4</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">7</b> &nbsp;Agentic Coding <span style="float:right;color:var(--muted);font-size:9px">p.9</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">3</b> &nbsp;Development Environment &amp; Tools <span style="float:right;color:var(--muted);font-size:9px">p.5</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">8</b> &nbsp;Beyond the Code <span style="float:right;color:var(--muted);font-size:9px">p.10</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">4</b> &nbsp;Debugging &amp; Profiling <span style="float:right;color:var(--muted);font-size:9px">p.6</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">9</b> &nbsp;Code Quality <span style="float:right;color:var(--muted);font-size:9px">p.11</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:var(--accent)">5</b> &nbsp;Version Control &amp; Git <span style="float:right;color:var(--muted);font-size:9px">p.7</span></div>
+    <div class="serif" style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--rule)"><b style="color:#2f5680">◎</b> &nbsp;Master Map — the whole desk <span style="float:right;color:var(--muted);font-size:9px">p.2</span></div>
+  </div>
+  <div style="position:absolute;bottom:.85in;left:.62in;font:400 9px sans-serif;color:var(--muted);line-height:1.6">
+    Legend:&nbsp; <span class="pill pn">course concept</span>&nbsp; <span class="pill pb">on your machine</span>&nbsp;
+    <span class="pill pg">configured well</span>&nbsp; <span class="pill pa">partial / opportunity</span>&nbsp;
+    <span class="pill pr">gap on this machine</span><br>
+    Source: missing.csail.mit.edu/2026 &nbsp;·&nbsp; machine scan of ~/.zshrc, ~/.gitconfig, gh auth, Cursor workspace, Claude Code plugin registry</div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 1/11</div>
+</div>
+
+<!-- ══════════════ PAGE 2 · MASTER MAP ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">◎ ·</span> Master Map — how your desk fits together</h1>
+    <div class="date">verified 2026-08-13</div></div>
+  <div class="model">One thesis for the whole atlas: <b>every surface on this desk is a different door into the same clone root,</b>
+    and GitHub is the only thing on the other side of the wall.</div>
+
+  <div style="display:grid;grid-template-columns:2.55in 46px 2.9in 46px 2.55in;gap:0;align-items:center">
+    <!-- col 1: interfaces -->
+    <div>
+      <div class="colhead" style="text-align:center">Interfaces — where you type</div>
+      <div class="node" style="margin-bottom:8px"><span class="t">Cursor <span class="pill pb" style="float:right">main driver</span></span>
+        <span class="s"><span class="mono">ai-architect.code-workspace</span> — 4 folders: RuView · labs-OO-Agents · scout-compass · github-mcp; <span class="mono">claudeCode.useTerminal: true</span></span></div>
+      <div class="node" style="margin-bottom:8px"><span class="t">Terminal · zsh</span>
+        <span class="s"><span class="mono">~/.zshrc</span> (1.4&thinsp;KB, lean) + secrets split into <span class="mono">~/.zsh_secrets</span> (chmod 600)</span></div>
+      <div class="node"><span class="t">Claude Code <span class="pill pb" style="float:right">agent</span></span>
+        <span class="s">14 active plugins · superpowers 6.3.0 process gates · runs inside Cursor&rsquo;s terminal and standalone</span></div>
+    </div>
+    <div class="arr"><div class="lbl">edit</div><div class="ln"></div></div>
+    <!-- col 2: source of truth -->
+    <div>
+      <div class="colhead" style="text-align:center">Source of truth — one convention</div>
+      <div class="node" style="border-width:2.5px">
+        <span class="t mono" style="font-size:12px">~/src/github.com/&lt;org&gt;/&lt;repo&gt;</span>
+        <span class="s">Canonical clone root · <b>19 org directories</b> (JeremyGracey-AI, NVIDIA-NeMo, anthropics, ruvnet&hellip;) ·
+        moves logged in <span class="mono">~/src/MOVELOG.md</span> · old paths are 14-day symlinks</span></div>
+      <div class="down"><div class="vln"></div></div>
+      <div class="node"><span class="t mono" style="font-size:11px">~/src/local/</span>
+        <span class="s">10 scratch projects with no remote — <span class="mono">nooa-agent-project</span>, <span class="mono">github-mcp</span>, <span class="mono">ztm</span>&hellip;</span></div>
+      <div class="down"><div class="vln"></div></div>
+      <div class="node"><span class="t">Toolchains (per-language)</span>
+        <span class="s">Python 3.14.4 + <b>uv 0.11.5</b> (<span class="mono">~/.venv</span>) · Rust 1.97.1, rustup-only since 08-13 · bun · Homebrew (Apple Silicon) · Flutter</span></div>
+    </div>
+    <div class="arr"><div class="lbl">sync</div><div class="ln"></div></div>
+    <!-- col 3: outside -->
+    <div>
+      <div class="colhead" style="text-align:center">Outside the wall</div>
+      <div class="node" style="margin-bottom:8px"><span class="t">GitHub · JeremyGracey-AI</span>
+        <span class="s">HTTPS only — <span class="mono">gh auth git-credential</span> is the credential helper (no SSH keys to rotate) · token scopes: repo, workflow, gist, read:org, delete_repo</span></div>
+      <div class="node" style="margin-bottom:8px"><span class="t">GitHub Actions</span>
+        <span class="s">CI + the scheduled OpenWiki workflow that regenerates the labs-OO-Agents wiki</span></div>
+      <div class="node"><span class="t">Third-party MCP surfaces</span>
+        <span class="s">Obsidian vault · memory graph · Scout Compass (governance) · Chrome DevTools · Semgrep · claude.ai connectors (Gmail, Drive, Figma&hellip;)</span></div>
+    </div>
+  </div>
+
+  <div class="caption">Cursor, zsh, and Claude Code never own state — they all operate on the same clone root; GitHub holds the durable copy.</div>
+
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">Trace one keystroke end-to-end: you save a file in Cursor — which of the three interfaces notices first, and what has to happen before GitHub knows?
+    &nbsp;·&nbsp; If ~/src vanished, which column rebuilds it: the interfaces, or the wall?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 2/11</div>
+</div>
+
+<!-- ══════════════ PAGE 3 · L1 SHELL ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">1 ·</span> Course Overview + the Shell</h1><div class="date">lecture 1/12/26</div></div>
+  <div class="model">Core mental model: <b>programs are building blocks; text is the interface; pipes make them compose.</b></div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow</div>
+      <div class="flow">
+        <div class="node"><span class="t">A textual interface</span><span class="s">the shell runs programs — faster and more scriptable than any GUI</span></div>
+        <div class="arr"><div class="lbl">navigate</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Move &amp; look</span><span class="s"><span class="mono">cd · pwd · ls</span> — absolute vs relative paths</span></div>
+        <div class="arr"><div class="lbl">discover</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Find programs</span><span class="s"><span class="mono">$PATH</span> is a search list; <span class="mono">which</span> shows the winner</span></div>
+      </div>
+      <div class="down"><div class="vln"></div></div>
+      <div class="flow">
+        <div class="node"><span class="t">One-job tools</span><span class="s"><span class="mono">cat · grep · sort · uniq · head · sed · awk</span></span></div>
+        <div class="arr"><div class="lbl">compose</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Pipes &amp; redirects</span><span class="s"><span class="mono">|</span> chains stdout→stdin · <span class="mono">&gt; &gt;&gt; $( )</span> capture it</span></div>
+        <div class="arr"><div class="lbl">automate</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Shell programs</span><span class="s">variables, <span class="mono">if · for · while</span>, background jobs <span class="mono">&amp;</span></span></div>
+      </div>
+      <div class="caption">Everything downstream of this course is this one loop: find a tool → compose it → script it.</div>
+      <h3 class="sec"><span class="n">§</span> A pipeline already living in your dotfiles</h3>
+      <div class="flow" style="width:88%">
+        <div class="node"><span class="t mono" style="font-size:10px">curl -s localhost:8000/…/health</span><span class="s">fetch JSON from the OpenJarvis server</span></div>
+        <div class="arr"><div class="lbl">|</div><div class="ln"></div></div>
+        <div class="node"><span class="t mono" style="font-size:10px">python3 -m json.tool</span><span class="s">pretty-print — that&rsquo;s your <span class="mono">jarvis-status</span> alias, a textbook L1 pipe</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">Shell: zsh <span class="pill pg" style="float:right">configured</span></div>
+        <div class="mb">macOS default, with <span class="mono">compinit</span> completions + uv shell completions loaded in <span class="mono">~/.zshrc</span>.</div></div>
+      <div class="mach"><div class="mt">Your $PATH, in resolution order</div>
+        <div class="mb">1&nbsp;<span class="mono">~/.bun/bin</span> (prepended last → wins)<br>
+        2&nbsp;<span class="mono">~/.local/bin</span> — uv-installed CLIs, npx<br>
+        3&nbsp;system + Homebrew <span class="mono">/opt/homebrew/bin</span><br>
+        4&nbsp;<span class="mono">~/dev/flutter/bin</span> (appended → loses ties)<br>
+        Python resolves to the 3.14.4 Framework build.</div></div>
+      <div class="mach"><div class="mt">Composition habit <span class="pill pg" style="float:right">in use</span></div>
+        <div class="mb">Your jarvis aliases pipe <span class="mono">curl → python3</span> and <span class="mono">tail -f</span> logs — the lecture&rsquo;s model, already muscle memory.</div></div>
+      <div class="mach"><div class="mt">Opportunity <span class="pill pa" style="float:right">partial</span></div>
+        <div class="mb">Classic text tools (<span class="mono">sed/awk/find</span>) appear rarely in your dotfiles — most wrangling now routes through Claude Code instead. Lecture 7 makes that trade explicit.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">Run <span class="mono" style="font-style:normal">which -a python3</span> — how many answers do you get, and which rung of your PATH decides?
+    &nbsp;·&nbsp; bun prepends itself <i>after</i> ~/.local/bin in the file — so who actually wins a name collision, and why?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 3/11</div>
+</div>
+
+<!-- ══════════════ PAGE 4 · L2 CLI ENV ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">2 ·</span> Command-line Environment</h1><div class="date">lecture 1/13/26</div></div>
+  <div class="model">Core mental model: <b>programs talk through standard channels</b> — args in, streams through, exit codes and signals out — <b>then you orchestrate and personalize.</b></div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow</div>
+      <div class="flow">
+        <div class="node"><span class="t">How to invoke</span><span class="s">args <span class="mono">$1 $@ $#</span> · globs <span class="mono">* ? { }</span></span></div>
+        <div class="arr"><div class="lbl">talk</div><div class="ln"></div></div>
+        <div class="node"><span class="t">How programs talk</span><span class="s">streams <span class="mono">| &gt; 2&gt;</span> · env vars · exit codes <span class="mono">$? &amp;&amp; ||</span></span></div>
+        <div class="arr"><div class="lbl">interrupt</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Signals &amp; jobs</span><span class="s"><span class="mono">Ctrl-C/Z · bg · fg · kill · nohup · trap</span></span></div>
+      </div>
+      <div class="down"><div class="vln"></div></div>
+      <div class="flow">
+        <div class="node"><span class="t">Go remote</span><span class="s"><span class="mono">ssh · scp · rsync · ~/.ssh/config</span></span></div>
+        <div class="arr"><div class="lbl">multiply</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Multiplex</span><span class="s"><span class="mono">tmux</span> — sessions ⊃ windows ⊃ panes</span></div>
+        <div class="arr"><div class="lbl">personalize</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Dotfiles</span><span class="s"><span class="mono">alias</span>, functions, <span class="mono">~/.zshrc</span> — a versioned home</span></div>
+      </div>
+      <h3 class="sec"><span class="n">§</span> Your <span class="mono" style="font-size:11px">restart-jarvis</span> function is this whole lecture in 12 lines</h3>
+      <div class="flow" style="width:97%">
+        <div class="node"><span class="t mono" style="font-size:9.5px">launchctl kickstart</span><span class="s">macOS&rsquo;s job control — the platform&rsquo;s <span class="mono">bg/fg/kill</span></span></div>
+        <div class="arr"><div class="lbl">poll</div><div class="ln"></div></div>
+        <div class="node"><span class="t mono" style="font-size:9.5px">for … curl -w '%{http_code}'</span><span class="s">loop on an <b>exit condition</b> — return codes as control flow</span></div>
+        <div class="arr"><div class="lbl">report</div><div class="ln"></div></div>
+        <div class="node"><span class="t mono" style="font-size:9.5px">curl | python3 -c … || echo ⚠</span><span class="s">stream + fallback via <span class="mono">||</span> — graceful failure</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">Secrets discipline <span class="pill pg" style="float:right">strong</span></div>
+        <div class="mb">API keys live in <span class="mono">~/.zsh_secrets</span> (chmod 600), sourced only if present — dotfiles stay shareable, secrets stay out.</div></div>
+      <div class="mach"><div class="mt">Personalization layer</div>
+        <div class="mb">Functions + aliases for the OpenJarvis service: <span class="mono">restart-jarvis</span>, <span class="mono">jarvis-logs</span>, <span class="mono">jarvis-status</span>, <span class="mono">start/stop-jarvis</span> via launchctl.</div></div>
+      <div class="mach"><div class="mt">Remote access <span class="pill pa" style="float:right">different door</span></div>
+        <div class="mb">No <span class="mono">~/.ssh/config</span> ceremony here — GitHub goes over HTTPS with <span class="mono">gh</span> as credential broker, and remote compute is cloud agents rather than raw ssh.</div></div>
+      <div class="mach"><div class="mt">Multiplexing <span class="pill pa" style="float:right">substituted</span></div>
+        <div class="mb">No tmux in the daily loop — Cursor&rsquo;s terminal panes and Claude Code sessions play that role. Trade-off: no detach-and-reattach on a dropped connection.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">Your health-poll loop retries 30× — what exit code does the <i>function</i> return if the server never comes up, and does anything downstream check it?
+    &nbsp;·&nbsp; Which lecture-2 primitive would let <span class="mono" style="font-style:normal">jarvis-logs</span> survive closing the terminal window?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 4/11</div>
+</div>
+
+<!-- ══════════════ PAGE 5 · L3 DEV ENV ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">3 ·</span> Development Environment &amp; Tools</h1><div class="date">lecture 1/14/26</div></div>
+  <div class="model">Core mental model: <b>editing is a language</b> (verbs × nouns), <b>and intelligence layers stack on top</b> — language servers, then AI at rising levels of autonomy.</div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow — a stack, climbed bottom-up</div>
+      <div class="rung"><span class="rn">L4</span><span class="rt">Coding agents</span><span class="rs">delegate whole tasks — the top of the autonomy ladder (→ Lecture 7)</span></div>
+      <div class="rung"><span class="rn">L3</span><span class="rt">Inline AI chat</span><span class="rs">conversational edits scoped to a selection or file</span></div>
+      <div class="rung"><span class="rn">L2</span><span class="rt">Autocomplete</span><span class="rs">next-edit prediction in the buffer</span></div>
+      <div class="rung"><span class="rn">L1</span><span class="rt">Code intelligence</span><span class="rs">Language Server Protocol: go-to-def, rename, diagnostics — <span class="mono">Ruff, Mypy</span></span></div>
+      <div class="rung"><span class="rn">L0</span><span class="rt">Text editing</span><span class="rs">Vim&rsquo;s grammar: <span class="mono">d/c/y</span> verbs × <span class="mono">w $ gg /regex</span> motions — composable commands</span></div>
+      <div class="caption">Each layer compresses the one below it — same shape as your Ladder of Abstractions paper, rediscovered in an editor.</div>
+      <h3 class="sec"><span class="n">§</span> Where your editors sit on the ladder</h3>
+      <div class="flow">
+        <div class="node"><span class="t">Cursor</span><span class="s">occupies L0–L4 in one window: buffer, LSP, tab-complete, chat, agent panel</span></div>
+        <div class="arr"><div class="lbl">hosts</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Claude Code in terminal</span><span class="s"><span class="mono">claudeCode.useTerminal: true</span> — the L4 agent runs inside the workspace</span></div>
+        <div class="arr"><div class="lbl">falls back</div><div class="ln"></div></div>
+        <div class="node"><span class="t">VS Code · PyCharm</span><span class="s">secondary editors, same repos, same clone root</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">One workspace, four projects <span class="pill pg" style="float:right">deliberate</span></div>
+        <div class="mb"><span class="mono">ai-architect.code-workspace</span> pins RuView, labs-OO-Agents, scout-compass, github-mcp — your active portfolio in one Cursor window.</div></div>
+      <div class="mach"><div class="mt">LSP made visible</div>
+        <div class="mb">The <span class="mono">typescript-lsp</span> plugin (1.0.0) gives Claude Code the same L1 servers Cursor uses — the agent reads diagnostics, not just text.</div></div>
+      <div class="mach"><div class="mt">Python intelligence</div>
+        <div class="mb">Ruff + Mypy install per-project via <span class="mono">uv</span>; the shared <span class="mono">~/.venv</span> (3.14.4) covers scratch work.</div></div>
+      <div class="mach"><div class="mt">Vim grammar <span class="pill pa" style="float:right">optional rung</span></div>
+        <div class="mb">No modal editing in the stack today. The lecture&rsquo;s claim: L0 speed still pays even with L4 above it — worth a one-week trial of Cursor&rsquo;s Vim mode.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">When Cursor&rsquo;s tab-complete and Claude Code disagree about an edit, which layer do you trust, and what breaks the tie — L1 diagnostics or your read of the diff?
+    &nbsp;·&nbsp; Which of the four workspace folders gets the least L1 coverage (no LSP for its language)?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 5/11</div>
+</div>
+
+<!-- ══════════════ PAGE 6 · L4 DEBUG/PROFILE ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">4 ·</span> Debugging &amp; Profiling</h1><div class="date">lecture 1/15/26</div></div>
+  <div class="model">Core mental model: <b>debugging is hypothesis-driven search; profiling is measurement before optimization.</b> &ldquo;Premature optimization is the root of all evil.&rdquo;</div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow — two loops</div>
+      <div class="flow">
+        <div class="node"><span class="t">Observe</span><span class="s">symptom, log line, failing test</span></div>
+        <div class="arr"><div class="lbl">guess</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Hypothesize</span><span class="s">smallest theory that explains it</span></div>
+        <div class="arr"><div class="lbl">pick tool</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Instrument</span><span class="s">print/log → <span class="mono">pdb/lldb</span> → <span class="mono">strace/dtruss</span> → sanitizers</span></div>
+        <div class="arr"><div class="lbl">confirm</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Root cause → fix</span><span class="s">then a test that pins it</span></div>
+      </div>
+      <div class="caption">Escalate tooling only when the cheaper rung fails: print → debugger → tracer → sanitizer.</div>
+      <div class="down"><div class="vln"></div></div>
+      <div class="flow">
+        <div class="node"><span class="t">Measure</span><span class="s"><span class="mono">time</span> (real/user/sys) · <span class="mono">htop · lsof · ss</span></span></div>
+        <div class="arr"><div class="lbl">visualize</div><div class="ln"></div></div>
+        <div class="node"><span class="t">See the shape</span><span class="s"><span class="mono">perf</span> → flame graphs · <span class="mono">hyperfine</span> A/B</span></div>
+        <div class="arr"><div class="lbl">target</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Optimize the bottleneck</span><span class="s">only what the data indicts</span></div>
+      </div>
+      <h3 class="sec"><span class="n">§</span> The macOS translation table</h3>
+      <table class="kv">
+        <tr><td class="k">strace</td><td>→ <span class="mono">dtruss</span> (SIP limits apply) — syscall view</td>
+            <td class="k">journalctl</td><td>→ <span class="mono">log show</span> · <span class="mono">~/Library/Logs/</span></td></tr>
+        <tr><td class="k">rr (Linux)</td><td>→ no record-replay here; lean on tests + logging</td>
+            <td class="k">perf</td><td>→ Instruments.app · <span class="mono">sample</span></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">Logging pattern <span class="pill pg" style="float:right">in use</span></div>
+        <div class="mb"><span class="mono">jarvis-logs</span> = <span class="mono">tail -f ~/Library/Logs/openjarvis-server.log</span> — the lecture&rsquo;s &ldquo;logs over prints&rdquo; rung, aliased.</div></div>
+      <div class="mach"><div class="mt">Browser-side debugging</div>
+        <div class="mb"><span class="mono">chrome-devtools-mcp</span> (1.7.0) gives the agent console reads, network traces, heap snapshots, LCP + memory-leak playbooks.</div></div>
+      <div class="mach"><div class="mt">Process discipline <span class="pill pg" style="float:right">encoded</span></div>
+        <div class="mb">superpowers&rsquo; <span class="mono">systematic-debugging</span> skill forces the observe→hypothesize loop on any bug before fixes — the lecture&rsquo;s method, as a gate.</div></div>
+      <div class="mach"><div class="mt">Profiling <span class="pill pg" style="float:right">closed 08-13</span></div>
+        <div class="mb"><span class="mono">hyperfine</span> 1.20.0 (brew) + <span class="mono">cargo-flamegraph</span> 0.6.14 now installed. macOS note: flame graphs ride on dtrace, so run <span class="mono">cargo flamegraph --root</span> under SIP. First target: RuView&rsquo;s Rust hot paths.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">Yesterday&rsquo;s bug: did you form a hypothesis before opening the file, or read code hoping to see it? Which rung of the tool ladder did you actually need?
+    &nbsp;·&nbsp; What&rsquo;s the real/user/sys split of your slowest test suite — and have you ever measured it?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 6/11</div>
+</div>
+
+<!-- ══════════════ PAGE 7 · L5 GIT ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">5 ·</span> Version Control &amp; Git</h1><div class="date">lecture 1/16/26</div></div>
+  <div class="model">Core mental model: <b>history is a DAG of immutable snapshots; commands are just graph surgery.</b> Understand the model and the commands explain themselves.</div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow — bottom-up</div>
+      <div class="flow">
+        <div class="node"><span class="t">Objects</span><span class="s">blobs (files) + trees (dirs), content-addressed by SHA</span></div>
+        <div class="arr"><div class="lbl">chain</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Commits = DAG</span><span class="s">immutable snapshots pointing at parents</span></div>
+        <div class="arr"><div class="lbl">name</div><div class="ln"></div></div>
+        <div class="node"><span class="t">References</span><span class="s">branches are mutable pointers; HEAD is you</span></div>
+        <div class="arr"><div class="lbl">compose</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Staging area</span><span class="s">craft each snapshot deliberately — <span class="mono">add -p</span></span></div>
+      </div>
+      <div class="caption">merge · rebase · reset · revert · bisect · worktree — all reduce to moving pointers on the same graph.</div>
+      <h3 class="sec"><span class="n">§</span> Your ~/.gitconfig, annotated — every line is a lecture concept</h3>
+      <table class="kv">
+        <tr><td class="k">merge.conflictstyle zdiff3</td><td>shows the <i>base</i> in conflicts — you see the DAG&rsquo;s common ancestor</td>
+            <td class="k">rerere.enabled</td><td>replays recorded conflict resolutions on rebase</td></tr>
+        <tr><td class="k">push.autoSetupRemote</td><td>first push wires the upstream ref</td>
+            <td class="k">fetch.prune</td><td>dead remote branches vanish locally</td></tr>
+        <tr><td class="k">diff.algorithm histogram</td><td>cleaner hunks than default Myers</td>
+            <td class="k">branch.sort -committerdate</td><td>freshest branches list first</td></tr>
+        <tr><td class="k">init.defaultBranch main</td><td>new DAGs start on <span class="mono">main</span></td>
+            <td class="k">filter.lfs</td><td>big binaries stored as pointers, globally</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">Config maturity <span class="pill pg" style="float:right">ahead of the lecture</span></div>
+        <div class="mb">zdiff3 + rerere + histogram is a power-user trio most senior devs never set. Nothing to add here.</div></div>
+      <div class="mach"><div class="mt">Auth: HTTPS, brokered</div>
+        <div class="mb">Both github.com and gists resolve credentials through <span class="mono">gh auth git-credential</span> — one keyring token, scopes: repo · workflow · gist · read:org.</div></div>
+      <div class="mach"><div class="mt">Convention as layout</div>
+        <div class="mb">Clone path = remote path: <span class="mono">~/src/github.com/&lt;org&gt;/&lt;repo&gt;</span>. The filesystem mirrors the DAG hosting.</div></div>
+      <div class="mach"><div class="mt">Worktrees <span class="pill pb" style="float:right">agent-grade</span></div>
+        <div class="mb">The lecture&rsquo;s &ldquo;advanced&rdquo; footnote is your daily infrastructure: Claude Code isolates agent work in throwaway worktrees (superpowers <span class="mono">using-git-worktrees</span>).</div></div>
+      <div class="mach"><div class="mt">Identity split <span class="pill pa" style="float:right">watch</span></div>
+        <div class="mb">Global gitconfig says <span class="mono">jeremy.a.gracey@…</span>; project docs say <span class="mono">gracey.woodworks@…</span>. Two author identities in your history — intentional?</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">Without running it: after a rebase of a 3-commit branch, how many <i>new</i> commit objects exist, and what happened to the old three?
+    &nbsp;·&nbsp; Which of your 19 org roots would <span class="mono" style="font-style:normal">git bisect</span> help most right now — and is its test fast enough to bisect with?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 7/11</div>
+</div>
+
+<!-- ══════════════ PAGE 8 · L6 SHIPPING ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">6 ·</span> Packaging &amp; Shipping Code</h1><div class="date">lecture 1/20/26</div></div>
+  <div class="model">Core mental model: <b>one codebase, many environments — only configuration may differ.</b> Each rung below isolates one more kind of drift.</div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow — an isolation ladder, climbed as needs grow</div>
+      <div class="rung"><span class="rn">S8</span><span class="rt">Publish</span><span class="rs"><span class="mono">uv publish</span> → PyPI / registries — strangers can install it</span></div>
+      <div class="rung"><span class="rn">S7</span><span class="rt">Orchestrate</span><span class="rs"><span class="mono">docker compose</span> — services declared together</span></div>
+      <div class="rung"><span class="rn">S6</span><span class="rt">Configure</span><span class="rs">env vars &amp; config out of code — deploy anywhere unchanged</span></div>
+      <div class="rung"><span class="rn">S5</span><span class="rt">Containerize</span><span class="rs"><span class="mono">docker build/run</span> — the whole userland pinned</span></div>
+      <div class="rung"><span class="rn">S4</span><span class="rt">Lock</span><span class="rs"><span class="mono">uv lock</span> — exact dependency graph, reproducible</span></div>
+      <div class="rung"><span class="rn">S3</span><span class="rt">Version</span><span class="rs">semver MAJOR.MINOR.PATCH — compatibility as a contract</span></div>
+      <div class="rung"><span class="rn">S2</span><span class="rt">Package</span><span class="rs"><span class="mono">uv build</span> + <span class="mono">pyproject.toml</span> → wheels</span></div>
+      <div class="rung"><span class="rn">S1</span><span class="rt">Isolate env</span><span class="rs"><span class="mono">uv venv</span> — dependencies stop leaking between projects</span></div>
+      <div class="caption">Climb only as high as the artifact needs — a scratch script stops at S1; NOOA ships at S8.</div>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">Python: uv end-to-end <span class="pill pg" style="float:right">modern</span></div>
+        <div class="mb">uv 0.11.5 owns S1–S4: <span class="mono">~/.venv</span> shared scratch env, per-project venvs, and NOOA pinned via <span class="mono">uv python pin 3.13</span> (floor 3.12, ceiling &lt;3.14).</div></div>
+      <div class="mach"><div class="mt">S8, reached</div>
+        <div class="mb">NOOA is literally <span class="mono">pip install nooa</span> — a package you work on ships from the top rung of this ladder.</div></div>
+      <div class="mach"><div class="mt">Three ladders in parallel</div>
+        <div class="mb">Python (uv) · Rust — RuView&rsquo;s 15-crate cargo workspace, where <span class="mono">Cargo.lock</span> is S4 · TypeScript (bun/npm) for Compass&rsquo;s server.</div></div>
+      <div class="mach"><div class="mt">Containers <span class="pill pa" style="float:right">one citizen</span></div>
+        <div class="mb">github-mcp runs Dockerized (S5); nothing here uses compose (S7) yet — your services are launchd jobs instead.</div></div>
+      <div class="mach"><div class="mt">Config hygiene <span class="pill pg" style="float:right">aligned</span></div>
+        <div class="mb">Secrets outside code (<span class="mono">~/.zsh_secrets</span>), keys via env — the S6 principle already governs the desk.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">For each of your three ladders — uv, cargo, bun — where is the lockfile, and is it committed? (One of them may surprise you.)
+    &nbsp;·&nbsp; If OpenJarvis had to run on a colleague&rsquo;s Mac tomorrow, which rung is the first one missing?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 8/11</div>
+</div>
+
+<!-- ══════════════ PAGE 9 · L7 AGENTIC ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">7 ·</span> Agentic Coding</h1><div class="date">lecture 1/21/26</div></div>
+  <div class="model">Core mental model: <b>an agent is a probabilistic model in a tool-calling loop; you manage it like a capable intern</b> — spec in, verification always.</div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow — the loop, then the discipline around it</div>
+      <div class="flow">
+        <div class="node"><span class="t">Context in</span><span class="s">CLAUDE.md · skills · your prompt · repo state</span></div>
+        <div class="arr"><div class="lbl">sample</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Model proposes</span><span class="s">next-token prediction — plausible, not guaranteed</span></div>
+        <div class="arr"><div class="lbl">act</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Tool call</span><span class="s">read / edit / shell / web — under permission gates</span></div>
+        <div class="arr"><div class="lbl">observe</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Result → context</span><span class="s">loop until done — or until <i>you</i> stop it</span></div>
+      </div>
+      <div class="caption">The loop is unbounded; everything below is how this desk bounds it — &ldquo;a bounded set of rules around an unbounded loop.&rdquo;</div>
+      <h3 class="sec"><span class="n">§</span> The discipline stack, as configured here</h3>
+      <div class="rung"><span class="rn">D4</span><span class="rt">Governance</span><span class="rs">&ldquo;agents propose, humans promote&rdquo; — Compass has <i>no tool</i> that writes active memory; policy enforced in structure, not prose</span></div>
+      <div class="rung"><span class="rn">D3</span><span class="rt">Process gates</span><span class="rs">superpowers 6.3.0: brainstorm → approve → TDD → verify-before-completion</span></div>
+      <div class="rung"><span class="rn">D2</span><span class="rt">Isolation</span><span class="rs">git worktrees per agent task; subagents (worker / invigilator / evaluator) never certify their own output</span></div>
+      <div class="rung"><span class="rn">D1</span><span class="rt">Context curation</span><span class="rs">CLAUDE.md at ~ and per-repo · 40+ skills · memory dir · MCP servers loaded on demand</span></div>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">The agent fleet <span class="pill pg" style="float:right">deep</span></div>
+        <div class="mb">Claude Code + 14 active plugins; MCP surfaces: Obsidian vault, memory graph, Scout Compass, Chrome DevTools, Semgrep, GitHub (Dockerized), claude.ai connectors.</div></div>
+      <div class="mach"><div class="mt">Privacy posture</div>
+        <div class="mb">The lecture&rsquo;s cloud-data warning is handled structurally: secrets in a 600-mode file the agent never sources, permission prompts on writes, MCP auth per-service.</div></div>
+      <div class="mach"><div class="mt">Verification culture <span class="pill pg" style="float:right">encoded</span></div>
+        <div class="mb">&ldquo;Cite or it didn&rsquo;t happen&rdquo; — claims carry <span class="mono">file:line</span>; unverified is reported as unverified (~/CLAUDE.md). The lecture&rsquo;s &ldquo;always verify&rdquo; as house law.</div></div>
+      <div class="mach"><div class="mt">Meta <span class="pill pb" style="float:right">right now</span></div>
+        <div class="mb">This atlas is itself one pass of the loop above — brainstormed, gated on your approval, built by the agent, verified page-by-page before delivery.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">For your last agent-written change: which D-rung caught the mistake — or would have, if there&rsquo;d been one?
+    &nbsp;·&nbsp; The lecture says agents fail probabilistically. Name the one repo where you&rsquo;d still forbid autonomous edits, and what that says about its tests.</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 9/11</div>
+</div>
+
+<!-- ══════════════ PAGE 10 · L8 BEYOND ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">8 ·</span> Beyond the Code</h1><div class="date">lecture 1/22/26</div></div>
+  <div class="model">Core mental model: <b>engineering is communication across time</b> — respect absent readers&rsquo; attention; explain <i>why</i>, not <i>what</i>.</div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow</div>
+      <div class="flow">
+        <div class="node"><span class="t">Write for the absent</span><span class="s">commits, docs, issues — readers arrive years later</span></div>
+        <div class="arr"><div class="lbl">then</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Collaborate</span><span class="s">self-contained PRs · <span class="mono">add -p</span> · blocking vs suggestion in review</span></div>
+        <div class="arr"><div class="lbl">then</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Ask &amp; answer well</span><span class="s">questions that show work; answers that teach</span></div>
+        <div class="arr"><div class="lbl">now</div><div class="ln"></div></div>
+        <div class="node"><span class="t">AI etiquette</span><span class="s">disclose assistance; understand what you ship</span></div>
+      </div>
+      <div class="caption">Archaeology tools close the loop: git blame · bisect · log · show — reading the history others wrote for you.</div>
+      <h3 class="sec"><span class="n">§</span> Your written record, mapped</h3>
+      <div class="flow">
+        <div class="node"><span class="t">Decisions</span><span class="s">43 ADRs in RuView — <i>why</i>, preserved next to the code</span></div>
+        <div class="arr"><div class="lbl">generated</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Reference</span><span class="s">OpenWiki regenerates the repo wiki on schedule — docs that can&rsquo;t rot silently</span></div>
+        <div class="arr"><div class="lbl">personal</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Knowledge base</span><span class="s">Obsidian Compound Vault — ingest, query, fold; conversations become pages</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">AI disclosure <span class="pill pg" style="float:right">structural</span></div>
+        <div class="mb">Agent commits carry <span class="mono">Co-Authored-By: Claude</span> + a session link, and the house rule requires <span class="mono">[actor]</span>-prefixed commits — the lecture&rsquo;s etiquette, automated.</div></div>
+      <div class="mach"><div class="mt">Observability as writing</div>
+        <div class="mb">~/CLAUDE.md&rsquo;s second pillar — &ldquo;what did it do, why, can I reconstruct it later&rdquo; — is this lecture&rsquo;s thesis applied to agents instead of colleagues.</div></div>
+      <div class="mach"><div class="mt">Commit hygiene <span class="pill pa" style="float:right">uneven</span></div>
+        <div class="mb">labs-OO-Agents history reads conventional-commit clean (<span class="mono">feat(tracing): …</span>); personal repos are looser. The absent reader lives in both.</div></div>
+      <div class="mach"><div class="mt">Public surface</div>
+        <div class="mb">gh account JeremyGracey-AI, 19 org roots — OSS contribution etiquette (self-contained, contextualized PRs) applies directly to NVIDIA-NeMo work.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">Open your last five commit messages: do any explain <i>why</i>? Would a stranger know what to revert?
+    &nbsp;·&nbsp; If a NeMo maintainer reads one PR of yours cold — what&rsquo;s the first question they&rsquo;d have to ask that the description should have answered?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 10/11</div>
+</div>
+
+<!-- ══════════════ PAGE 11 · L9 QUALITY ══════════════ -->
+<div class="page">
+  <div class="hdr"><h1><span class="n">9 ·</span> Code Quality</h1><div class="date">lecture 1/23/26</div></div>
+  <div class="model">Core mental model: <b>quality is layered automation, surface to depth</b> — each layer catches what the one above cannot; humans review only what machines can&rsquo;t.</div>
+  <div class="cols">
+    <div>
+      <div class="colhead">The lecture&rsquo;s flow — the quality funnel</div>
+      <div class="flow">
+        <div class="node"><span class="t">Format</span><span class="s">Black · Prettier · gofmt — style stops being a decision</span></div>
+        <div class="arr"><div class="lbl">catches more</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Lint</span><span class="s">Ruff · semgrep — pattern-level bugs &amp; security smells</span></div>
+        <div class="arr"><div class="lbl">deeper</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Test</span><span class="s">unit → integration → property (Hypothesis) · coverage</span></div>
+        <div class="arr"><div class="lbl">enforce</div><div class="ln"></div></div>
+        <div class="node"><span class="t">Pre-commit + CI</span><span class="s">hooks locally, GitHub Actions remotely — no opt-out</span></div>
+      </div>
+      <div class="caption">Command runners (just, npm scripts, hatch) make every layer one short word — if it&rsquo;s hard to run, it won&rsquo;t be.</div>
+      <h3 class="sec"><span class="n">§</span> Where each layer lives on this desk</h3>
+      <table class="kv">
+        <tr><td class="k">format/lint</td><td>Ruff via uv, per project</td>
+            <td class="k">security lint</td><td>Semgrep Guardian plugin 2.1.4 — SAST, secrets, supply-chain</td></tr>
+        <tr><td class="k">test</td><td>pytest — swe-prep alone holds 37–55 tests per problem</td>
+            <td class="k">CI</td><td>GitHub Actions; OpenWiki refresh runs on schedule</td></tr>
+        <tr><td class="k">review</td><td><span class="mono">/code-review</span> multi-agent + invigilator/evaluator pattern</td>
+            <td class="k">process</td><td>superpowers TDD + verification-before-completion</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="colhead m">On your machine</div>
+      <div class="mach"><div class="mt">The house bar <span class="pill pg" style="float:right">written down</span></div>
+        <div class="mb">~/CLAUDE.md&rsquo;s &ldquo;Evaluated&rdquo; pillar demands a <i>stated pass condition</i> — evals with a bar, adversarial review, claim-level verification. Most shops never write theirs down.</div></div>
+      <div class="mach"><div class="mt">A second reviewer, always</div>
+        <div class="mb">Your agent kernel separates worker from invigilator from evaluator — the lecture&rsquo;s &ldquo;automation enforces, humans judge&rdquo; as an org chart.</div></div>
+      <div class="mach"><div class="mt">Pre-commit hooks <span class="pill pg" style="float:right">closed 08-14</span></div>
+        <div class="mb">labs-OO-Agents already shipped one (hook active). Configs added + activated in RuView (hygiene · ruff · <span class="mono">cargo fmt</span>), swe-prep, scout-compass. RuView carries ~960 legacy ruff findings, gated per-file as code is touched.</div></div>
+      <div class="mach"><div class="mt">Command runner <span class="pill pa" style="float:right">partial</span></div>
+        <div class="mb">No <span class="mono">just</span>/task runner convention across the 19 roots; each repo has its own incantations. A shared <span class="mono">justfile</span> habit would compound.</div></div>
+    </div>
+  </div>
+  <div class="probe">
+    <div class="ph">Probe the flow</div>
+    <div class="pq">For labs-OO-Agents: which layer would catch a subtly wrong docstring — and is that layer automated or is it you?
+    &nbsp;·&nbsp; The funnel only works if every layer runs on every change. Which of your active repos skips a layer, and what class of bug does that admit?</div>
+  </div>
+  <div class="foot">Missing Semester × Workstation Atlas · working copy · 11/11</div>
+</div>

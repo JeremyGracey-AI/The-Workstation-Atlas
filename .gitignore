@@ -1,0 +1,45 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- Environments ---
+# Project-local venv (S1 on the packaging ladder — recreate with `uv sync`)
+.venv/
+venv/
+env/
+.python-version.local
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+profile_default/
+ipython_config.py
+
+# Notebook outputs are scrubbed by the nbstripout clean filter (see .gitattributes),
+# not ignored — the notebooks themselves are tracked, their outputs are not.
+
+# --- Tooling caches ---
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Agent / session state ---
+# .remember/ also self-ignores via its own .gitignore; belt and braces, since this
+# repo is public and .remember holds conversation buffers.
+.remember/
+.claude/settings.local.json
+
+# --- macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
